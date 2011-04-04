@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @file
- * adds a formatter for taxonomy terms to output as CSV
+ * adds a formatter for taxonomy terms with options to specify element type, wrapper type, and separators
  *
  */
 /**
@@ -30,9 +29,7 @@ function taxtocomma_field_formatter_info() {
 function taxtocomma_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  
-  $element = array();
-  
+  $element = array(); 
   $element['links_option'] = array(
     '#type' 					=> 'checkbox',
     '#title'					=> t('Links'),
@@ -63,11 +60,11 @@ function taxtocomma_field_formatter_settings_form($field, $instance, $view_mode,
 			),
   );
 	$element['element_class'] = array(
-	    '#type' 					=> 'textfield',
-	    '#title' 					=> t('Element Class'),
-	    '#description' 		=> t('The class assigned to the element'),
-	    '#default_value' 	=> $settings['element_class'],
-	  );
+	  '#type' 					=> 'textfield',
+	  '#title' 					=> t('Element Class'),
+	  '#description' 		=> t('The class assigned to the element'),
+	  '#default_value' 	=> $settings['element_class'],
+	);
   $element['wrapper_option'] = array(
     '#type' 					=> 'select',
     '#title' 					=> t('Wrapper'),
@@ -88,12 +85,11 @@ function taxtocomma_field_formatter_settings_form($field, $instance, $view_mode,
 			),
   );
 	$element['wrapper_class'] = array(
-	    '#type' 					=> 'textfield',
-	    '#title' 					=> t('Wrapper Class'),
-	    '#description' 		=> t('The class assigned to the wrapper'),
-	    '#default_value' 	=> $settings['wrapper_class'],
-	  );
-  
+	  '#type' 					=> 'textfield',
+	  '#title' 					=> t('Wrapper Class'),
+	  '#description' 		=> t('The class assigned to the wrapper'),
+	  '#default_value' 	=> $settings['wrapper_class'],
+	);
   return $element;
 }
 /**
@@ -142,17 +138,16 @@ function taxtocomma_field_formatter_view($entity_type, $entity, $field, $instanc
 		$wrapper[1] = '';
 	}
 	$formatted = '';
-	
 	foreach ($items as $delta => $item) {
-			$termid = $item['tid'];
-  		$term[] = $termid;
-  		$actterm = entity_load('taxonomy_term', $term);
-			$uri = entity_uri('taxonomy_term', $actterm[$termid]);
-			if ($settings['links_option']) {
-      	$formatted .= $elementwrap[0] . '<a href=\'/' . $uri['path'] . '\'>' . check_plain($actterm[$termid]->name) . '</a>' . $elementwrap[1] . $separator;  
-    	} else {
-				$formatted .= $elementwrap[0] . check_plain($actterm[$termid]->name) . $elementwrap[1] . $separator;
-			} 
+		$termid = $item['tid'];
+  	$term[] = $termid;
+  	$actterm = entity_load('taxonomy_term', $term);
+		$uri = entity_uri('taxonomy_term', $actterm[$termid]);
+		if ($settings['links_option']) {
+     	$formatted .= $elementwrap[0] . '<a href=\'/' . $uri['path'] . '\'>' . check_plain($actterm[$termid]->name) . '</a>' . $elementwrap[1] . $separator;  
+    } else {
+			$formatted .= $elementwrap[0] . check_plain($actterm[$termid]->name) . $elementwrap[1] . $separator;
+		} 
   }
 	$length = strlen($separator);
 	$formatted = substr($formatted, 0 , -($length));
