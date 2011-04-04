@@ -10,7 +10,7 @@
 function taxtocomma_field_formatter_info() {
   return array(
     'taxonomy_term_reference_csv' => array(
-      'label' => t('Comma Separated'),
+      'label' => t('Delimited'),
       'field types' => array('taxonomy_term_reference'),
 			'settings' => array(
         'links_option' => FALSE,
