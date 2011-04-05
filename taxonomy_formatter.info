@@ -1,6 +1,0 @@
-name = Taxonomy Terms with Commas
-description = "Add a formatter to taxonomy terms that allows selection of element type, wrapper type, and separators."
-package = Fields
-core = 7.x
-files[] = taxonomy_formatter.module
-files[] = taxonomy_formatter.install
