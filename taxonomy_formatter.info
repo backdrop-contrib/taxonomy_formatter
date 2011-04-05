@@ -1,0 +1,5 @@
+name = Taxonomy Formatter
+description = "Add a formatter to taxonomy terms that allows selection of element type, wrapper type, and separators."
+package = Fields
+core = 7.x
+files[] = taxonomy_formatter.module
