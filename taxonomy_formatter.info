@@ -3,3 +3,4 @@ description = "Add a formatter to taxonomy terms that allows selection of elemen
 package = Fields
 core = 7.x
 files[] = taxonomy_formatter.module
+dependencies[] = taxonomy
