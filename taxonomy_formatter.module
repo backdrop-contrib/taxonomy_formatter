@@ -4,6 +4,7 @@
  * adds a formatter for taxonomy terms with options to specify element type, wrapper type, and separators
  *
  */
+
 /**
  * Implements hook_field_formatter_info().
  */
@@ -23,6 +24,15 @@ function taxonomy_formatter_field_formatter_info() {
     ),
   );
 }
+
+/**
+ * Implements hook_field_formatter_prepare_view().
+ */
+function taxonomy_formatter_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
+  // Just let the core version do the work for us.
+  taxonomy_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
+}
+
 /**
  * Implements hook_field_formatter_settings_form().
  */
@@ -92,6 +102,7 @@ function taxonomy_formatter_field_formatter_settings_form($field, $instance, $vi
     );
   return $element;
 }
+
 /**
  * Implements hook_field_formatter_settings_summary().
  */
@@ -116,6 +127,7 @@ function taxonomy_formatter_field_formatter_settings_summary($field, $instance, 
   }
   return $summary;
 }
+
 /**
  * Implements hook_field_formatter_view().
  */
@@ -126,40 +138,38 @@ function taxonomy_formatter_field_formatter_view($entity_type, $entity, $field, 
   $settings = $display['settings'];
   $element = array();
   $separator = check_plain($settings['separator_option']);
+
+  $elementwrap = array('','');
+  $wrapper = array('','');
+
   if ($settings['element_option']!='- None -') {
     $elementwrap[0] = '<' . $settings['element_option'] . ' class="' . check_plain($settings['element_class']) . '">';
     $elementwrap[1] = '</' . $settings['element_option'] . '>';
-  }
-  else {
-    $elementwrap[0] = '';
-    $elementwrap[1] = '';
   }
   if ($settings['wrapper_option']!='- None -') {
     $wrapper[0] = '<' . $settings['wrapper_option'] . ' class="' . check_plain($settings['wrapper_class']) . '">';
     $wrapper[1] = '</' . $settings['wrapper_option'] . '>';
   }
-  else {
-    $wrapper[0] = '';
-    $wrapper[1] = '';
-  }
-  $formatted = '';
-  foreach ($items as $delta => $item) {
-    $termid = $item['tid'];
-    $term[] = $termid;
-    $actterm = entity_load('taxonomy_term', $term);
-    if(isset($actterm[$termid])) {
-      $uri = entity_uri('taxonomy_term', $actterm[$termid]);
-      if ($settings['links_option']) {
-        $formatted .= $elementwrap[0] . l($actterm[$termid]->name, $uri['path'], $uri['options']) . $elementwrap[1] . $separator;
-      }
-      else {
-        $formatted .= $elementwrap[0] . check_plain($actterm[$termid]->name) . $elementwrap[1] . $separator;
-      }
+
+  // Format each term.
+  $formatted = array();
+  foreach ($items as $item) {
+    $term = $item['taxonomy_term'];
+    $uri = entity_uri('taxonomy_term', $term);
+
+    $buffer = $elementwrap[0];
+    if ($settings['links_option']) {
+      $buffer .= l($term->name, $uri['path'], $uri['options']);
     }
+    else {
+      $buffer .= check_plain($term->name);
+    }
+    $buffer .= $elementwrap[1];
+    $formatted[] = $buffer;
   }
-  $length = strlen($separator);
-  $formatted = substr($formatted, 0 , -($length));
-  $formatted = $wrapper[0] . $formatted . $wrapper[1];
-  $element[0]['#markup'] = $formatted;
+
+  // Build final markup and return.
+  $markup = $wrapper[0] . implode($separator, $formatted) . $wrapper[1];
+  $element[0]['#markup'] = $markup;
   return $element;
 }
