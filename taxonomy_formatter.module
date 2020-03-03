@@ -120,6 +120,9 @@ function taxonomy_formatter_field_formatter_settings_summary($field, $instance, 
  * Implements hook_field_formatter_view().
  */
 function taxonomy_formatter_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  if (empty($items)) {
+    return array();
+  }
   $settings = $display['settings'];
   $element = array();
   $separator = check_plain($settings['separator_option']);
